@@ -1,10 +1,12 @@
 package com.getcapacitor.community.appprocess;
 
+import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
-import com.getcapacitor.annotation.CapacitorPlugin;
+
+import org.json.JSONException;
 
 @CapacitorPlugin(name = "AppProcess")
 public class AppProcessPlugin extends Plugin {
@@ -20,26 +22,26 @@ public class AppProcessPlugin extends Plugin {
   private RelaunchOptions parseRelaunchOptions(PluginCall call) {
     RelaunchOptions options = new RelaunchOptions();
 
-    if (call.getData() != null && call.getData().has("relaunch")) {
-      JSObject relaunchObj = call.getObject("relaunch");
+    JSObject relaunchObj = call.getObject("relaunch");
 
-      if (relaunchObj != null) {
-        options.shouldRelaunch = true;
+    if (relaunchObj != null) {
+      options.shouldRelaunch = true;
 
-        if (relaunchObj.has("cooldown")) {
-          options.cooldown = relaunchObj.optLong("cooldown", options.cooldown);
-        }
-
-        if (relaunchObj.has("waitTime")) {
-          options.waitTime = relaunchObj.optLong("waitTime", options.waitTime);
-        }
-
-        return options;
+      try {
+        options.cooldown = relaunchObj.getLong("cooldown");
+      } catch (JSONException exception) {
       }
 
-      boolean relaunchBool = call.getBoolean("relaunch", false);
-      options.shouldRelaunch = relaunchBool;
+      try {
+        options.waitTime = relaunchObj.getLong("waitTime");
+      } catch (JSONException exception) {
+      }
+
+      return options;
     }
+
+    boolean relaunchBool = call.getBoolean("relaunch", false);
+    options.shouldRelaunch = relaunchBool;
 
     return options;
   }
