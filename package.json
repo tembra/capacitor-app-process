@@ -1,6 +1,6 @@
 {
   "name": "capacitor-app-process",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Gives information about app process and the possibility to kill it and relaunch the app",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
