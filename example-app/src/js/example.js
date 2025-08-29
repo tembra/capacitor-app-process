@@ -1,4 +1,4 @@
-import { AppProcess } from '@capacitor-community/app-process';
+import { AppProcess } from 'capacitor-app-process';
 
 window.testEcho = () => {
     const inputValue = document.getElementById("echoInput").value;

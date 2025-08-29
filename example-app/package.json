@@ -14,9 +14,9 @@
   },
   "dependencies": {
     "@capacitor/core": "latest",
-    "@capacitor-community/app-process": "file:..",
     "@capacitor/ios": "7.0.0",
-    "@capacitor/android": "7.0.0"
+    "@capacitor/android": "7.0.0",
+    "capacitor-app-process": "file:.."
   },
   "devDependencies": {
     "@capacitor/cli": "latest",

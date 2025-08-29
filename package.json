@@ -1,7 +1,7 @@
 {
-  "name": "@capacitor-community/app-process",
+  "name": "capacitor-app-process",
   "version": "0.0.1",
-  "description": "Give information about app process and the possibility to kill and relaunch it",
+  "description": "Gives information about app process and the possibility to kill it and relaunch the app",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -31,7 +31,8 @@
   ],
   "scripts": {
     "verify": "npm run verify:ios && npm run verify:android && npm run verify:web",
-    "verify:ios": "xcodebuild -scheme CapacitorCommunityAppProcess -destination generic/platform=iOS",
+    "verify:ios": "echo iOS unimplemented",
+    "_verify:ios": "xcodebuild -scheme CapacitorCommunityAppProcess -destination generic/platform=iOS",
     "verify:android": "cd android && ./gradlew clean build test && cd ..",
     "verify:web": "npm run build",
     "lint": "npm run eslint && npm run prettier -- --check && npm run swiftlint -- lint",

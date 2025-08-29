@@ -1,10 +1,17 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { AppProcessPlugin } from './definitions';
+import type { AppProcessPlugin, PidResult, PssMiBResult } from './definitions';
 
 export class AppProcessWeb extends WebPlugin implements AppProcessPlugin {
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('ECHO', options);
-    return options;
+  async getPid(): Promise<PidResult> {
+    throw this.unavailable('AppProcess API not available for web');
+  }
+
+  async getPssMiB(): Promise<PssMiBResult> {
+    throw this.unavailable('AppProcess API not available for web');
+  }
+
+  async softKill(): Promise<void> {
+    throw this.unavailable('AppProcess API not available for web');
   }
 }

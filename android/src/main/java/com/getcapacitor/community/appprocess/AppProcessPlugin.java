@@ -9,14 +9,102 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 @CapacitorPlugin(name = "AppProcess")
 public class AppProcessPlugin extends Plugin {
 
-    private AppProcess implementation = new AppProcess();
+  private AppProcess implementation;
 
-    @PluginMethod
-    public void echo(PluginCall call) {
-        String value = call.getString("value");
+  private static class RelaunchOptions {
+    boolean shouldRelaunch = false;
+    Long cooldown = null;
+    Long waitTime = null;
+  }
 
-        JSObject ret = new JSObject();
-        ret.put("value", implementation.echo(value));
-        call.resolve(ret);
+  private RelaunchOptions parseRelaunchOptions(PluginCall call) {
+    RelaunchOptions options = new RelaunchOptions();
+
+    if (call.getData() != null && call.getData().has("relaunch")) {
+      JSObject relaunchObj = call.getObject("relaunch");
+
+      if (relaunchObj != null) {
+        options.shouldRelaunch = true;
+
+        if (relaunchObj.has("cooldown")) {
+          options.cooldown = relaunchObj.optLong("cooldown", options.cooldown);
+        }
+
+        if (relaunchObj.has("waitTime")) {
+          options.waitTime = relaunchObj.optLong("waitTime", options.waitTime);
+        }
+
+        return options;
+      }
+
+      boolean relaunchBool = call.getBoolean("relaunch", false);
+      options.shouldRelaunch = relaunchBool;
     }
+
+    return options;
+  }
+
+  @Override
+  public void load() {
+    implementation = new AppProcess(getContext(), getActivity());
+  }
+
+  @PluginMethod
+  public void getPid(PluginCall call) {
+    try {
+      int pid = implementation.getPid();
+
+      JSObject ret = new JSObject();
+      ret.put("pid", pid);
+
+      call.resolve(ret);
+
+    } catch (Exception exception) {
+      call.reject("[AppProcess] getPid failed: " + exception.getMessage(), null, exception);
+    }
+  }
+
+  @PluginMethod
+  public void getPssMiB(PluginCall call) {
+    try {
+      float pssMiB = implementation.getPssMiB();
+
+      JSObject ret = new JSObject();
+      ret.put("pssMiB", pssMiB);
+
+      call.resolve(ret);
+
+    } catch (Exception exception) {
+      call.reject("[AppProcess] getPssMiB failed: " + exception.getMessage(), null, exception);
+    }
+  }
+
+  @PluginMethod
+  public void softKill(PluginCall call) {
+    getActivity().runOnUiThread(() -> {
+      try {
+        RelaunchOptions options = this.parseRelaunchOptions(call);
+
+        if (options.shouldRelaunch) {
+          try {
+            implementation.scheduleRelaunch(options.cooldown, options.waitTime);
+          } catch (Exception exception) {
+            call.reject(
+                "[AppProcess] softKill failed. Can not schedule relaunch: "
+                    + exception.getMessage(),
+                null,
+                exception);
+
+            return;
+          }
+        }
+
+        call.resolve();
+        implementation.softKill();
+
+      } catch (Exception exception) {
+        call.reject("[AppProcess] softKill failed: " + exception.getMessage(), null, exception);
+      }
+    });
+  }
 }
